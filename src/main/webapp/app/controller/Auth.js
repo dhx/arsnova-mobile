@@ -78,37 +78,33 @@ Ext.define("ARSnova.controller.Auth", {
 
 		this.services.then(Ext.bind(function (services) {
 			var enabledServices;
-			if (ARSnova.app.userRole === ARSnova.app.USER_ROLE_STUDENT) {
-				enabledServices = services.filter(function (service) {
-					return ['ldap', 'cas'].indexOf(service.id) !== -1;
-				});
-				var guestLogin = services.filter(function (service) {
-					return service.id === 'guest';
-				});
-				var guest;
+                        if (ARSnova.app.userRole === ARSnova.app.USER_ROLE_STUDENT) {
+                                enabledServices = services.filter(function (service) {
+                                        return service.allowedRoles.indexOf('student') !== -1;
+                                });
 
-				if (enabledServices.length === 0 && guestLogin.length > 0) {
-					this.login({service: guestLogin[0]});
-				} else {
-					ARSnova.app.mainTabPanel.tabPanel.loginPanel.addButtons("student");
-					ARSnova.app.mainTabPanel.tabPanel.animateActiveItem(
-						ARSnova.app.mainTabPanel.tabPanel.loginPanel, 'slide'
-					);
-				}
-			} else {
-				enabledServices = services.filter(function (service) {
-					return service.allowLecturer;
-				});
+                                if (enabledServices.length === 1) {
+                                        this.login({service: enabledServices[0]});
+                                } else {
+                                        ARSnova.app.mainTabPanel.tabPanel.loginPanel.addButtons("student");
+                                        ARSnova.app.mainTabPanel.tabPanel.animateActiveItem(
+                                                ARSnova.app.mainTabPanel.tabPanel.loginPanel, 'slide'
+                                        );
+                                }
+                        } else {
+                                enabledServices = services.filter(function (service) {
+                                        return service.allowedRoles.indexOf('speaker') !== -1;
+                                });
 
-				if (enabledServices.length === 1) {
-					this.login({service: enabledServices[0]});
-				} else {
-					ARSnova.app.mainTabPanel.tabPanel.loginPanel.addButtons("speaker");
-					ARSnova.app.mainTabPanel.tabPanel.animateActiveItem(
-						ARSnova.app.mainTabPanel.tabPanel.loginPanel, 'slide'
-					);
-				}
-			}
+                                if (enabledServices.length === 1) {
+                                        this.login({service: enabledServices[0]});
+                                } else {
+                                        ARSnova.app.mainTabPanel.tabPanel.loginPanel.addButtons("speaker");
+                                        ARSnova.app.mainTabPanel.tabPanel.animateActiveItem(
+                                                ARSnova.app.mainTabPanel.tabPanel.loginPanel, 'slide'
+                                        );
+                                }
+                        }
 		}, this));
 	},
 
